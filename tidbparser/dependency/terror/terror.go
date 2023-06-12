@@ -19,7 +19,7 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/mysql"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/dependency/mysql"
 	"github.com/juju/errors"
 )
 

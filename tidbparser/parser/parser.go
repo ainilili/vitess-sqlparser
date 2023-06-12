@@ -32,13 +32,13 @@ import __yyfmt__ "fmt"
 import (
 	"strings"
 
-	"github.com/blastrain/vitess-sqlparser/tidbparser/ast"
-	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/model"
-	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/mysql"
-	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/types"
-	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/util/auth"
-	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/util/charset"
-	"github.com/blastrain/vitess-sqlparser/tidbparser/parser/opcode"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/ast"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/dependency/model"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/dependency/mysql"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/dependency/types"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/dependency/util/auth"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/dependency/util/charset"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/parser/opcode"
 )
 
 type yySymType struct {

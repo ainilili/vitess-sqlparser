@@ -21,10 +21,10 @@ import (
 	"io"
 	"strings"
 
-	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/mysql"
-	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/terror"
-	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/util/charset"
-	"github.com/blastrain/vitess-sqlparser/tidbparser/parser/opcode"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/dependency/mysql"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/dependency/terror"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/dependency/util/charset"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/parser/opcode"
 	"github.com/juju/errors"
 )
 
@@ -141,6 +141,7 @@ func TypeStr(tp byte) (r string) {
 // It is used for converting Text to Blob,
 // or converting Char to Binary.
 // Args:
+//
 //	tp: type enum
 //	cs: charset
 func TypeToStr(tp byte, cs string) (r string) {

@@ -49,6 +49,11 @@ func (buf *Buffer) WriteByte(b byte) error {
 	return nil
 }
 
+func (buf *Buffer) WriteRune(r rune) error {
+	buf.bytes = append(buf.bytes, []byte(string(r))...)
+	return nil
+}
+
 // Bytes is equivalent to bytes.Buffer.Bytes.
 func (buf *Buffer) Bytes() []byte {
 	return buf.bytes

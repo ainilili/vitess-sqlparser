@@ -24,8 +24,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/blastrain/vitess-sqlparser/sqltypes"
-	tidbparser "github.com/blastrain/vitess-sqlparser/tidbparser/parser"
+	"github.com/ainilili/vitess-sqlparser/sqltypes"
+	tidbparser "github.com/ainilili/vitess-sqlparser/tidbparser/parser"
 )
 
 // Instructions for creating new types: If a type
@@ -2608,9 +2608,9 @@ func Backtick(in string) string {
 }
 
 func formatID(buf *TrackedBuffer, original, lowered string) {
-	for i, c := range original {
-		if !isLetter(uint16(c)) {
-			if i == 0 || !isDigit(uint16(c)) {
+	for i, c := range []rune(original) {
+		if !isLetter(c) {
+			if i == 0 || !isDigit(c) {
 				goto mustEscape
 			}
 		}
@@ -2634,9 +2634,9 @@ mustEscape:
 
 func compliantName(in string) string {
 	var buf bytes.Buffer
-	for i, c := range in {
-		if !isLetter(uint16(c)) {
-			if i == 0 || !isDigit(uint16(c)) {
+	for i, c := range []rune(in) {
+		if !isLetter(c) {
+			if i == 0 || !isDigit(c) {
 				buf.WriteByte('_')
 				continue
 			}

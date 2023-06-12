@@ -19,7 +19,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/terror"
+	"github.com/ainilili/vitess-sqlparser/tidbparser/dependency/terror"
 	"github.com/juju/errors"
 )
 

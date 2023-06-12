@@ -23,7 +23,12 @@ func TestDropTableParsing(t *testing.T) {
 }
 
 func TestSelectParsing(t *testing.T) {
-	_, err := Parse(`SELECT * from users where id = 1 order by created_at limit 1 offset 3`)
+	_, err := Parse(`SELECT name from users where id = 1 order by created_at limit 1 offset 3`)
+	checkErr(t, err)
+}
+
+func TestSelectParsingChinese(t *testing.T) {
+	_, err := Parse(`SELECT sum(姓名) from 用户 where 状态 = '已完成' order by 创建时间 limit 1 offset 3`)
 	checkErr(t, err)
 }
 

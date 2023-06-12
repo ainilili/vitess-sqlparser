@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/blastrain/vitess-sqlparser/bytes2"
-	"github.com/blastrain/vitess-sqlparser/sqltypes"
+	"github.com/ainilili/vitess-sqlparser/bytes2"
+	"github.com/ainilili/vitess-sqlparser/sqltypes"
 )
 
 const eofChar = 0x100
@@ -33,7 +33,7 @@ type Tokenizer struct {
 	InStream      *strings.Reader
 	AllowComments bool
 	ForceEOF      bool
-	lastChar      uint16
+	lastChar      int32
 	Position      int
 	lastToken     []byte
 	LastError     string
@@ -352,7 +352,7 @@ func (tkn *Tokenizer) Scan() (int, []byte) {
 	}
 	tkn.skipBlank()
 	switch ch := tkn.lastChar; {
-	case isLetter(ch):
+	case isLetter(ch), isChinese(ch):
 		tkn.next()
 		if ch == 'X' || ch == 'x' {
 			if tkn.lastChar == '\'' {
@@ -360,7 +360,7 @@ func (tkn *Tokenizer) Scan() (int, []byte) {
 				return tkn.scanHex()
 			}
 		}
-		return tkn.scanIdentifier(byte(ch))
+		return tkn.scanIdentifier(ch)
 	case isDigit(ch):
 		return tkn.scanNumber(false)
 	case ch == ':':
@@ -477,11 +477,11 @@ func (tkn *Tokenizer) skipBlank() {
 	}
 }
 
-func (tkn *Tokenizer) scanIdentifier(firstByte byte) (int, []byte) {
+func (tkn *Tokenizer) scanIdentifier(firstByte int32) (int, []byte) {
 	buffer := &bytes2.Buffer{}
-	buffer.WriteByte(firstByte)
-	for isLetter(tkn.lastChar) || isDigit(tkn.lastChar) {
-		buffer.WriteByte(byte(tkn.lastChar))
+	buffer.WriteRune(firstByte)
+	for isLetter(tkn.lastChar) || isDigit(tkn.lastChar) || isChinese(tkn.lastChar) {
+		buffer.WriteRune(tkn.lastChar)
 		tkn.next()
 	}
 	lowered := bytes.ToLower(buffer.Bytes())
@@ -542,19 +542,19 @@ func (tkn *Tokenizer) scanLiteralIdentifier() (int, []byte) {
 
 func (tkn *Tokenizer) scanBindVar() (int, []byte) {
 	buffer := &bytes2.Buffer{}
-	buffer.WriteByte(byte(tkn.lastChar))
+	buffer.WriteRune(tkn.lastChar)
 	token := VALUE_ARG
 	tkn.next()
 	if tkn.lastChar == ':' {
 		token = LIST_ARG
-		buffer.WriteByte(byte(tkn.lastChar))
+		buffer.WriteRune(tkn.lastChar)
 		tkn.next()
 	}
 	if !isLetter(tkn.lastChar) {
 		return LEX_ERROR, buffer.Bytes()
 	}
 	for isLetter(tkn.lastChar) || isDigit(tkn.lastChar) || tkn.lastChar == '.' {
-		buffer.WriteByte(byte(tkn.lastChar))
+		buffer.WriteRune(tkn.lastChar)
 		tkn.next()
 	}
 	return token, buffer.Bytes()
@@ -614,7 +614,7 @@ exit:
 	return token, buffer.Bytes()
 }
 
-func (tkn *Tokenizer) scanString(delim uint16, typ int) (int, []byte) {
+func (tkn *Tokenizer) scanString(delim int32, typ int) (int, []byte) {
 	buffer := &bytes2.Buffer{}
 	for {
 		ch := tkn.lastChar
@@ -632,14 +632,14 @@ func (tkn *Tokenizer) scanString(delim uint16, typ int) (int, []byte) {
 			if decodedChar := sqltypes.SQLDecodeMap[byte(tkn.lastChar)]; decodedChar == sqltypes.DontEscape {
 				ch = tkn.lastChar
 			} else {
-				ch = uint16(decodedChar)
+				ch = int32(decodedChar)
 			}
 			tkn.next()
 		}
 		if ch == eofChar {
 			return LEX_ERROR, buffer.Bytes()
 		}
-		buffer.WriteByte(byte(ch))
+		buffer.WriteRune(ch)
 	}
 	return typ, buffer.Bytes()
 }
@@ -682,25 +682,30 @@ func (tkn *Tokenizer) consumeNext(buffer *bytes2.Buffer) {
 		// This should never happen.
 		panic("unexpected EOF")
 	}
-	buffer.WriteByte(byte(tkn.lastChar))
+	buffer.WriteRune(tkn.lastChar)
 	tkn.next()
 }
 
 func (tkn *Tokenizer) next() {
-	if ch, err := tkn.InStream.ReadByte(); err != nil {
+
+	if ch, _, err := tkn.InStream.ReadRune(); err != nil {
 		// Only EOF is possible.
 		tkn.lastChar = eofChar
 	} else {
-		tkn.lastChar = uint16(ch)
+		tkn.lastChar = ch
 	}
 	tkn.Position++
 }
 
-func isLetter(ch uint16) bool {
+func isLetter(ch int32) bool {
 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_' || ch == '@'
 }
 
-func digitVal(ch uint16) int {
+func isChinese(ch int32) bool {
+	return '\u4E00' <= ch && ch <= '\u9FA5'
+}
+
+func digitVal(ch int32) int {
 	switch {
 	case '0' <= ch && ch <= '9':
 		return int(ch) - '0'
@@ -712,6 +717,6 @@ func digitVal(ch uint16) int {
 	return 16 // larger than any legal digit val
 }
 
-func isDigit(ch uint16) bool {
+func isDigit(ch int32) bool {
 	return '0' <= ch && ch <= '9'
 }

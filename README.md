@@ -12,8 +12,10 @@ But it cannot parse some query (like offset or bulk insert...) because it custom
 
 Also, some libraries use from vitess sql parser directly. But vitess's sql parser only partial supports DDL parsing.  
 
-We want to perfectly support parsing for SQL and DDL.  
-Therefore we use vitess sql parser directly and also use TiDB parser for DDL parsing. 
+We want to perfectly support parsing for SQL and DDL.
+Therefore we use vitess sql parser directly and also use TiDB parser for DDL parsing.
+
+Supported parse sql with chinese field name.
 
 # Compare SQL parser libraries in Go
 
@@ -38,7 +40,7 @@ package main
 
 import (
  	"fmt"
-	"github.com/blastrain/vitess-sqlparser/sqlparser"
+	"github.com/ainilili/vitess-sqlparser/sqlparser"
 )
 
 func main() {
